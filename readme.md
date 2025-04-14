@@ -12,7 +12,7 @@ The final product will include reproducible code, and a written summary of insig
 
 ## Contents
 
-- Project 1 will have an explanation of the sources of data, data dictionary and an explanation of how we preprocessed and cleaned the data
+- [Project 1](Project1) will have an explanation of the sources of data, data dictionary and an explanation of how we preprocessed and cleaned the data
 - Project 2 is an Exploratory data analysis of the data
 - Project 3 is the actual cluster analysis, using one clustering technique
 - Project 4 is a simulation study to compare 2 or more clustering techniques with generated data that has similar characteristics as the real data
