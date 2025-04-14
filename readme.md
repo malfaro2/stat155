@@ -1,5 +1,4 @@
 # Welcome to my project repo for STAT 155
-Marcela Alfaro Córdoba
 
 ## Congressional Clusters: Analyzing Voting Patterns and Demographics in the 118th U.S. Congress
 
