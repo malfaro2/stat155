@@ -141,8 +141,6 @@ colnames(organs_original)
 ```
 
 
-
-
 Below, we have printed the first 20 rows of the dataset. Note that *all of the values after the first 4 identifier columns are missing for these first 20 rows*. We checked the data manually to make sure that this was not a data loading error, and it does seem that the data has been loaded in correctly.
 
 
