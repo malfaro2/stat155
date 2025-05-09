@@ -6,16 +6,19 @@
 **Title of Repository**:  
 \[Repository name with link\]
 
-**Author(s)**:  
-\[Names and affiliations if available\]
+**Author**:  
+\[Name\]
 
 **Date of Check**:  
 \[YYYY-MM-DD\]
 
 **Checker**:  
-\[Your name and affiliation\]
+\[Your name\]
 
 ------------------------------------------------------------------------
+
+Note: save this qmd in local, complete it and print it as a pdf to
+submit it on Canvas.
 
 ## 1. Materials and Setup
 
@@ -60,7 +63,7 @@
 
 ------------------------------------------------------------------------
 
-## 6. Summary Rating (Optional)
+## 6. Summary Rating (submit in Google Sheet)
 
 <table>
 <thead>
