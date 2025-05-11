@@ -62,8 +62,8 @@ df_strong <- simulate_data(0.95)
 ## Visualizing Correlation
 
 ```{r visualize-correlation, fig.cap="Scatterplots showing increasing correlation between x1 and x2"}
-#| fig-height: 10
-#| fig-width: 30
+#| fig-height: 4
+#| fig-width: 12
 plot_list <- list(
   ggplot(df_none, aes(x = x1, y = x2)) + geom_point() + ggtitle("No Correlation"),
   ggplot(df_mild, aes(x = x1, y = x2)) + geom_point() + ggtitle("Mild Correlation"),
