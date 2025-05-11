@@ -203,20 +203,19 @@ data-halign="left">MSE</th>
 
 </div>
 
-## How do we know which numbers are statistically different?
-
--   We need repetitions!
+## What we should observe (according to theory)
 
 -   In the **no correlation** case, all methods yield similar
     coefficients and MSE.
-
 -   As multicollinearity increases, **Linear Regression** coefficients
     become unstable.
-
 -   **Ridge** regression shrinks coefficients and handles
     multicollinearity better.
-
 -   **Lasso** may set some coefficients to zero depending on the penalty
     strength.
+
+## How do we know which numbers are statistically different?
+
+-   We need repetitions!
 
 ------------------------------------------------------------------------
