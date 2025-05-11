@@ -1,0 +1,117 @@
+---
+title: "Experimental Design Example"
+format: md
+execute:
+  echo: true
+---
+
+## Setup
+
+```{r setup}
+#| eval: true
+#| echo: true
+#| messages: false
+#| warnings: false
+
+suppressWarnings(suppressPackageStartupMessages({
+library(MASS)
+library(ggplot2)
+library(glmnet)
+library(dplyr)
+library(tidyr)
+library(gridExtra)
+library(kableExtra)
+}))
+
+library(MASS)
+library(ggplot2)
+library(glmnet)
+library(dplyr)
+library(tidyr)
+library(gridExtra)
+library(kableExtra)
+```
+
+## Data Simulation
+
+We simulate three datasets:
+1. No multicollinearity (x1 and x2 independent)
+2. Mild multicollinearity (correlation = 0.5)
+3. Strong multicollinearity (correlation = 0.95)
+
+```{r simulate-data}
+set.seed(123)
+n <- 100
+b0 <- 5
+b1 <- 3
+b2 <- -2
+noise <- rnorm(n)
+
+simulate_data <- function(correlation) {
+  x1 <- rnorm(n)
+  x2 <- correlation * x1 + sqrt(1 - correlation^2) * rnorm(n)
+  y <- b0 + b1 * x1 + b2 * x2 + noise
+  data.frame(x1 = x1, x2 = x2, y = y)
+}
+
+df_none <- simulate_data(0.0)
+df_mild <- simulate_data(0.5)
+df_strong <- simulate_data(0.95)
+```
+
+## Visualizing Correlation
+
+```{r visualize-correlation, fig.cap="Scatterplots showing increasing correlation between x1 and x2"}
+plot_list <- list(
+  ggplot(df_none, aes(x = x1, y = x2)) + geom_point() + ggtitle("No Correlation"),
+  ggplot(df_mild, aes(x = x1, y = x2)) + geom_point() + ggtitle("Mild Correlation"),
+  ggplot(df_strong, aes(x = x1, y = x2)) + geom_point() + ggtitle("Strong Correlation")
+)
+grid.arrange(grobs = plot_list, ncol = 3)
+```
+
+## Modeling Function
+
+```{r fit-models}
+fit_models <- function(df) {
+  X <- as.matrix(df[, c("x1", "x2")])
+  y <- df$y
+
+  lm_fit <- lm(y ~ x1 + x2, data = df)
+  ridge_fit <- glmnet(X, y, alpha = 0, lambda = 1)
+  lasso_fit <- glmnet(X, y, alpha = 1, lambda = 0.1)
+
+  results <- tibble(
+    Model = c("Linear", "Ridge", "Lasso"),
+    bias_b1 = c(coef(lm_fit)["x1"]-b1, coef(ridge_fit)[2]-b1, coef(lasso_fit)[2]-b1),
+    bias_b2 = c(coef(lm_fit)["x2"]-b2, coef(ridge_fit)[3]-b2, coef(lasso_fit)[3]-b2),
+    MSE = c(mean((predict(lm_fit) - y)^2),
+            mean((predict(ridge_fit, X) - y)^2),
+            mean((predict(lasso_fit, X) - y)^2))
+  )
+  return(results)
+}
+```
+
+## Results for Each Scenario
+
+```{r results-all}
+res_none <- fit_models(df_none) %>% mutate(Scenario = "None")
+res_mild <- fit_models(df_mild) %>% mutate(Scenario = "Mild")
+res_strong <- fit_models(df_strong) %>% mutate(Scenario = "Strong")
+
+results <- bind_rows(res_none, res_mild, res_strong)
+kable(results %>% pivot_wider(names_from = Model, values_from = c(bias_b1, bias_b2, MSE)))
+
+```
+
+## What we should observe (according to theory)
+
+-   In the **no correlation** case, all methods yield similar coefficients and MSE.
+-   As multicollinearity increases, **Linear Regression** coefficients become unstable.
+-   **Ridge** regression shrinks coefficients and handles multicollinearity better.
+-   **Lasso** may set some coefficients to zero depending on the penalty strength.
+
+## How do we know which numbers are statistically different? 
+
+* We need repetitions!

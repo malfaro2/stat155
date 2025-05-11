@@ -4,67 +4,24 @@
 ## Setup
 
 ``` r
-knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+suppressWarnings(suppressPackageStartupMessages({
 library(MASS)
 library(ggplot2)
 library(glmnet)
-```
-
-    Loading required package: Matrix
-
-    Loaded glmnet 4.1-8
-
-``` r
 library(dplyr)
-```
-
-
-    Attaching package: 'dplyr'
-
-    The following object is masked from 'package:MASS':
-
-        select
-
-    The following objects are masked from 'package:stats':
-
-        filter, lag
-
-    The following objects are masked from 'package:base':
-
-        intersect, setdiff, setequal, union
-
-``` r
 library(tidyr)
-```
-
-
-    Attaching package: 'tidyr'
-
-    The following objects are masked from 'package:Matrix':
-
-        expand, pack, unpack
-
-``` r
 library(gridExtra)
-```
+library(kableExtra)
+}))
 
-
-    Attaching package: 'gridExtra'
-
-    The following object is masked from 'package:dplyr':
-
-        combine
-
-``` r
+library(MASS)
+library(ggplot2)
+library(glmnet)
+library(dplyr)
+library(tidyr)
+library(gridExtra)
 library(kableExtra)
 ```
-
-
-    Attaching package: 'kableExtra'
-
-    The following object is masked from 'package:dplyr':
-
-        group_rows
 
 ## Data Simulation
 
@@ -212,10 +169,17 @@ kable(results %>% pivot_wider(names_from = Model, values_from = c(bias_b1, bias_
 </tbody>
 </table>
 
-## Interpretation
+## What we should observe (according to theory)
 
--   In the **no correlation** case, all methods perform similarly.
+-   In the **no correlation** case, all methods yield similar
+    coefficients and MSE.
 -   As multicollinearity increases, **Linear Regression** coefficients
     become unstable.
--   **Ridge** shrinks coefficients and remains stable.
--   **Lasso** can zero out or shrink coefficients based on penalization.
+-   **Ridge** regression shrinks coefficients and handles
+    multicollinearity better.
+-   **Lasso** may set some coefficients to zero depending on the penalty
+    strength.
+
+## How do we know which numbers are statistically different?
+
+-   We need repetitions!
