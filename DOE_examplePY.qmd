@@ -125,5 +125,3 @@ results.pivot(index="Scenario", columns="Model", values=["bias_b1", "bias_b2", "
 
 * We need repetitions!
 
-
-------------------------------------------------------------------------

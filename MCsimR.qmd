@@ -1,20 +1,14 @@
 ---
 title: "Monte Carlo Simulation: Comparing Linear, Ridge, and Lasso Regression"
-format: md
+format: html
 editor: visual
 ---
 
 ## Objective
 
-This Monte Carlo simulation compares the performance of three regression models:
-- Linear Regression
-- Ridge Regression
-- Lasso Regression
+This Monte Carlo simulation compares the performance of three regression models: - Linear Regression - Ridge Regression - Lasso Regression
 
-We simulate 30 datasets:
-- 10 datasets with no correlation between predictors $x_1$ and $x_2$
-- 10 datasets with mild correlation
-- 10 datasets with high correlation
+We simulate 30 datasets: - 10 datasets with no correlation between predictors $x_1$ and $x_2$ - 10 datasets with mild correlation - 10 datasets with high correlation
 
 Models are evaluated using Mean Squared Error (MSE), and results are summarized by mean and standard deviation of MSE.
 
@@ -32,7 +26,7 @@ set.seed(111)
 ```{r}
 generate_data <- function(n = 100, correlation = 0.0) {
   sigma <- matrix(c(1, correlation, correlation, 1), nrow = 2)
-  predictors <- MASS::mvrnorm(n, mu = c(0, 0), Sigma = sigma)
+  predictors <- mvtnorm::rmvnorm(n, mean = c(0, 0), sigma = sigma, method = "eigen")
   x1 <- predictors[, 1]
   x2 <- predictors[, 2]
   noise <- rnorm(n)
@@ -107,4 +101,43 @@ ggplot(results, aes(x = label, y = MSE, fill = Model)) +
   geom_boxplot() +
   labs(title = "Model MSE by Predictor Correlation", x = "Correlation", y = "MSE") +
   theme_minimal()
+```
+
+## Statistical comparison of results
+
+```{r}
+#| fig-height: 7.5
+#| fig-width: 15
+
+alpha <- 0.05
+
+# Fit the ANOVA model
+model <- aov(MSE ~ label + Model, data = results)
+
+plot(model)
+
+hist(model$residuals)
+
+# Perform Tukey's HSD for multiple comparisons with alpha 
+tukey_results <- TukeyHSD(model, conf.level = 1 - alpha) 
+
+# View the results
+plot(tukey_results)
+```
+
+What if we don't have normal residuals?
+
+```{r}
+
+# Kruskal-Wallis for 'label'
+kruskal.test(MSE ~ label, data = results)
+
+# Kruskal-Wallis for 'Model'
+kruskal.test(MSE ~ Model, data = results)
+
+# OR install https://github.com/cran/ARTool
+
+# Pairwise comparisons for 'label'
+pairwise.wilcox.test(results$MSE, results$label, p.adjust.method = "holm")
+
 ```
