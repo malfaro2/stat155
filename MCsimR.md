@@ -54,7 +54,7 @@ set.seed(111)
 ``` r
 generate_data <- function(n = 100, correlation = 0.0) {
   sigma <- matrix(c(1, correlation, correlation, 1), nrow = 2)
-  predictors <- MASS::mvrnorm(n, mu = c(0, 0), Sigma = sigma)
+  predictors <- mvtnorm::rmvnorm(n, mean = c(0, 0), sigma = sigma, method = "eigen")
   x1 <- predictors[, 1]
   x2 <- predictors[, 2]
   noise <- rnorm(n)
@@ -125,15 +125,15 @@ summary
     # A tibble: 9 × 4
       Model  label     Mean_MSE SD_MSE
       <chr>  <chr>        <dbl>  <dbl>
-    1 Lasso  High Corr    1.19   0.276
-    2 Lasso  Mild Corr    1.14   0.245
-    3 Lasso  No Corr      1.01   0.208
-    4 Linear High Corr    1.14   0.269
-    5 Linear Mild Corr    1.18   0.377
-    6 Linear No Corr      0.918  0.212
-    7 Ridge  High Corr    1.19   0.367
-    8 Ridge  Mild Corr    1.16   0.341
-    9 Ridge  No Corr      0.956  0.244
+    1 Lasso  High Corr    1.17   0.231
+    2 Lasso  Mild Corr    1.11   0.211
+    3 Lasso  No Corr      0.992  0.222
+    4 Linear High Corr    1.17   0.269
+    5 Linear Mild Corr    1.12   0.326
+    6 Linear No Corr      0.900  0.194
+    7 Ridge  High Corr    1.15   0.369
+    8 Ridge  Mild Corr    1.18   0.330
+    9 Ridge  No Corr      0.982  0.237
 
 ## Visualization (Optional)
 
@@ -145,3 +145,82 @@ ggplot(results, aes(x = label, y = MSE, fill = Model)) +
 ```
 
 ![](MCsimR.markdown_strict_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+
+## Statistical comparison of results
+
+``` r
+alpha <- 0.05
+
+# Fit the ANOVA model
+model <- aov(MSE ~ label + Model, data = results)
+
+plot(model)
+```
+
+![](MCsimR.markdown_strict_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+
+![](MCsimR.markdown_strict_files/figure-markdown_strict/unnamed-chunk-6-2.png)
+
+![](MCsimR.markdown_strict_files/figure-markdown_strict/unnamed-chunk-6-3.png)
+
+![](MCsimR.markdown_strict_files/figure-markdown_strict/unnamed-chunk-6-4.png)
+
+``` r
+hist(model$residuals)
+```
+
+![](MCsimR.markdown_strict_files/figure-markdown_strict/unnamed-chunk-6-5.png)
+
+``` r
+# Perform Tukey's HSD for multiple comparisons with alpha 
+tukey_results <- TukeyHSD(model, conf.level = 1 - alpha) 
+
+# View the results
+plot(tukey_results)
+```
+
+![](MCsimR.markdown_strict_files/figure-markdown_strict/unnamed-chunk-6-6.png)
+
+![](MCsimR.markdown_strict_files/figure-markdown_strict/unnamed-chunk-6-7.png)
+
+What if we don’t have normal residuals?
+
+``` r
+# Kruskal-Wallis for 'label'
+kruskal.test(MSE ~ label, data = results)
+```
+
+
+        Kruskal-Wallis rank sum test
+
+    data:  MSE by label
+    Kruskal-Wallis chi-squared = 10.002, df = 2, p-value = 0.006732
+
+``` r
+# Kruskal-Wallis for 'Model'
+kruskal.test(MSE ~ Model, data = results)
+```
+
+
+        Kruskal-Wallis rank sum test
+
+    data:  MSE by Model
+    Kruskal-Wallis chi-squared = 0.38769, df = 2, p-value = 0.8238
+
+``` r
+# OR install https://github.com/cran/ARTool
+
+# Pairwise comparisons for 'label'
+pairwise.wilcox.test(results$MSE, results$label, p.adjust.method = "holm")
+```
+
+
+        Pairwise comparisons using Wilcoxon rank sum exact test 
+
+    data:  results$MSE and results$label 
+
+              High Corr Mild Corr
+    Mild Corr 0.866     -        
+    No Corr   0.014     0.015    
+
+    P value adjustment method: holm 

@@ -1,6 +1,6 @@
 ---
 title: "Monte Carlo Simulation: Comparing Linear, Ridge, and Lasso Regression"
-format: html
+format: md
 editor: visual
 ---
 
