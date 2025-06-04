@@ -1,1 +1,0 @@
-# a script that explains how to download and clean your data.
